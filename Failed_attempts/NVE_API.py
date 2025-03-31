@@ -2,12 +2,22 @@ import requests
 import torch
 import json
 
-NVD_API_KEY = '8f81605b-4562-4c96-acf4-fda182ecaa2f'  # Replace with your actual NVD API key
-HEADERS={"apiKey": NVD_API_KEY}
+# Run these locally
+NVD_API_KEY = "######" # Replace with your actual NVD API key
+HEADERS={"apiKey": NVD_API_KEY} 
+
 from sentence_transformers import SentenceTransformer, util
 
 model= SentenceTransformer('all-MiniLM-L6-v2')
 
+
+def load_api_key(key_filepath):
+    try:
+        with open(key_filepath, 'r', encoding="utf-8") as apikf:
+            return apikf.read().strip()
+    except FileNotFoundError as fnf:
+        return (f"File was not found ❗\nCurrent filepath: {key_filepath}")
+    
 with open("C:/Users/ayujo/SPRING 2025/IST 402/CVECodeExtrator/nvdcve-1.1-modified.json", 'r') as f:
     nvd_schema=json.load(f)
 
