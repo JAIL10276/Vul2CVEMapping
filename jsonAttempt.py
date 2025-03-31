@@ -3,7 +3,7 @@ import torch
 import json
 import pandas as pd
 import time
-input_file= 'C:/Users/ayujo/SPRING 2025/IST 402/CVECodeExtrator/Research Goal 2.xlsx'
+input_file= 'C:/Users/ayujo/SPRING 2025/IST 402/CVEExtractor/Vul2CVEMapping/Research Goal 2.xlsx'
 rsg2_df = pd.read_excel(input_file, sheet_name=None)
 NVD_API_KEY = '8f81605b-4562-4c96-acf4-fda182ecaa2f'  # Replace with your actual NVD API key
 HEADERS={"apiKey": NVD_API_KEY}
@@ -11,7 +11,7 @@ from sentence_transformers import SentenceTransformer, util
 
 model= SentenceTransformer('all-MiniLM-L6-v2')
 
-with open("C:/Users/ayujo/SPRING 2025/IST 402/CVECodeExtrator/nvdcve-1.1-modified.json", 'r', encoding="utf-8") as f:
+with open("C:/Users/ayujo/SPRING 2025/IST 402/CVEExtractor/Vul2CVEMapping/nvdcve-1.1-modified.json", 'r', encoding="utf-8") as f:
     nvd_schema=json.load(f)
 
 cve_ids = []
@@ -59,7 +59,8 @@ def map_cve_to_vul():
         print(f"📃 Processing sheet: {domain}")
 
         if "Vulnerabilities" not in df.columns:
-            print(f"❗Skipping sheet {domain}'Vulnerabilities' column found in sheet: {domain}")
+            print(f"❗Skipping sheet {domain}'Vulnerabilities' column not found in sheet: {domain}")
+            print(f"Current columns {df.columns.to_list()}")
             continue
         
         matched_cve_ids = []
@@ -69,7 +70,7 @@ def map_cve_to_vul():
         for index in range(len(df)):
             try:
                 
-                vul_text = str(df.at[index,"Vulnerabilities"]) if pd.notna(df.at[index,"Vulnerabilities"]) else ""
+                vul_text = str(df.at[index,"Vulnerabilities".strip(" ")]) if pd.notna(df.at[index,"Vulnerabilities".strip(" ")]) else ""
                 if vul_text.strip() == "" or vul_text == "Summary Failed":
                     raise ValueError("Invalid vulnerability text")
 
@@ -94,7 +95,7 @@ def map_cve_to_vul():
         results_by_domain[domain] = df
         print(f"✅ Finished processing sheet: {domain}")
 
-    output_path = "C:/Users/ayujo/SPRING 2025/IST 402/CVECodeExtrator/matched_cve_results.xlsx"
+    output_path = "C:/Users/ayujo/SPRING 2025/IST 402/CVEExtractor/Vul2CVEMapping/matched_cve_results.xlsx"
 
     with pd.ExcelWriter(output_path) as writer:
         for domain, df in results_by_domain.items():
